@@ -693,7 +693,7 @@ const CustomerDetail = () => {
       </div>
 
       {/* Dynamic Details Section */}
-      {selectedCard === "ocr" && !kyc?.moderation.ocr.ocrMatch && (
+      {/* {selectedCard === "ocr" &&  (
         <div className="mb-8">
           <h3 className="text-2xl font-semibold text-red-600 mb-4">
             OCR Mismatch Details
@@ -718,9 +718,133 @@ const CustomerDetail = () => {
             ))}
           </div>
         </div>
-      )}
+      )} */}
 
-      {selectedCard === "liveliness" && !kyc?.moderation?.liveliness?.passed && (
+{selectedCard === "ocr" && (
+  <div className="mb-8">
+    {kyc?.moderation?.ocr?.ocrMatch ? (
+      // If OCR matches, show OCR data in a single card
+      <div className="max-w-2xl mx-auto p-8 rounded-lg shadow-lg bg-gradient-to-br from-green-50 to-green-100 border-l-8 border-green-500">
+        <div className="flex items-center mb-6">
+          <svg
+            className="w-8 h-8 text-green-600 mr-4"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+          <h3 className="text-2xl font-semibold text-green-700">
+            OCR Matched Successfully
+          </h3>
+        </div>
+        <p className="text-lg text-gray-700 mb-6">
+          All OCR values have been verified and matched with the provided KYC data.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+  {Object.entries(kyc?.moderation?.ocr?.ocrData)
+    .filter(([key]) => key !== "sex") // Exclude the 'sex' key
+    .map(([key, value]) => (
+      <div
+        key={key}
+        className="flex flex-col bg-white p-4 rounded-md shadow border border-gray-200"
+      >
+        <h4 className="text-sm font-bold text-gray-600 capitalize">
+          {key.replace(/([A-Z])/g, " $1")}
+        </h4>
+        <p className="text-base font-medium text-gray-800 mt-1">{value}</p>
+      </div>
+    ))}
+</div>
+
+      </div>
+    ) : (
+      // If OCR mismatch, show mismatch details
+      <div>
+        <h3 className="text-2xl font-semibold text-red-600 mb-4">
+          OCR Mismatch Details
+        </h3>
+        <div className="space-y-6">
+          {Object.entries(kyc.moderation.ocr.ocrMismatchDetails).map(([field, details]) => (
+            <div
+              key={field}
+              className="p-6 rounded-lg shadow-lg bg-gradient-to-br from-red-100 to-red-200 border-l-4 border-red-500 transform transition-transform hover:scale-105"
+            >
+              <h4 className="text-lg font-bold text-red-700 capitalize mb-2">
+                {field.replace(/([A-Z])/g, " $1")}
+              </h4>
+              <p className="text-sm text-gray-700">
+                <strong>OCR Value:</strong> {details.ocrValue}
+              </p>
+              <p className="text-sm text-gray-700">
+                <strong>KYC Value:</strong> {details.kycValue}
+              </p>
+              <p className="text-sm text-red-600 italic mt-2">{details.reason}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+)}
+
+{selectedCard === "face" && (
+  <div className="mb-8 flex flex-col items-center">
+    <h3 className="text-2xl font-semibold text-blue-600 mb-6">
+      Face Match Confidence
+    </h3>
+    <div className="relative w-48 h-48">
+      {/* Animated Circular Progress */}
+      <svg className="w-full h-full transform -rotate-90">
+        <circle
+          className="text-gray-300"
+          strokeWidth="12"
+          stroke="currentColor"
+          fill="transparent"
+          r="70"
+          cx="96"
+          cy="96"
+        />
+        <circle
+          className="text-blue-500 transition-all duration-500 ease-out"
+          strokeWidth="12"
+          strokeDasharray="440"
+          strokeDashoffset={`${
+            440 - (440 * kyc.moderation.faceMatch.matchConfidence).toFixed(2)
+          }`}
+          strokeLinecap="round"
+          stroke="currentColor"
+          fill="transparent"
+          r="70"
+          cx="96"
+          cy="96"
+        />
+      </svg>
+      {/* Inner Content */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="text-center">
+          <span className="text-4xl font-bold text-blue-600">
+            {(kyc.moderation.faceMatch.matchConfidence * 100).toFixed(1)}%
+          </span>
+          <p className="text-sm text-gray-500 mt-1">Confidence Level</p>
+        </div>
+      </div>
+    </div>
+    <p className="text-gray-700 text-center mt-6">
+      The above circle represents the face match confidence score. A higher score indicates a better match.
+    </p>
+  </div>
+)}
+
+
+
+      {selectedCard === "liveliness" && (
         <div className="mb-8">
           <h3 className="text-2xl font-semibold text-yellow-600 mb-4">
             Liveliness Check Details
